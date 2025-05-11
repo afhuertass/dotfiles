@@ -191,6 +191,7 @@ awful.screen.connect_for_each_screen(function(s)
     awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
+    
     s.mypromptbox = awful.widget.prompt()
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
@@ -206,7 +207,7 @@ awful.screen.connect_for_each_screen(function(s)
         filter  = awful.widget.taglist.filter.all,
         buttons = taglist_buttons
     }
-
+    
     -- Create a tasklist widget
     -- s.mytasklist = awful.widget.tasklist {
     --     screen  = s,
@@ -215,7 +216,9 @@ awful.screen.connect_for_each_screen(function(s)
     -- }
 
     -- Create the wibox
-    -- s.mywibox = awful.wibar({ position = "top", screen = s })
+    s.mywibox = awful.wibar({ position = "top", screen = s,  
+    override_redirect = true,  -- Add this line to allow Polybar to be shown
+    visible = false })
 
     -- -- Add widgets to the wibox
     -- s.mywibox:setup {
@@ -597,7 +600,7 @@ awful.spawn.with_shell("sh ~/.fehbg")
 
 
 --polybar 
-awful.spawn.once("~/.config/polybar/launch.sh --shapes") -- Replace 'example' with your bar name
+awful.spawn.with_shell("~/.config/polybar/launch.sh --shapes") -- Replace 'example' with your bar name
 
 
 beautiful.useless_gap = 5
