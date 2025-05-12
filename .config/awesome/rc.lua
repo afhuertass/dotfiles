@@ -2,6 +2,15 @@
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, "luarocks.loader")
 
+---------------------------------
+-- Global Variables
+---------------------------------
+
+local widget_fg = "#a6adc8"
+local widget_bg = "#1e1e2e"
+
+
+
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -21,6 +30,9 @@ require("awful.hotkeys_popup.keys")
 -- Load Debian menu entries
 local debian = require("debian.menu")
 local has_fdo, freedesktop = pcall(require, "freedesktop")
+
+
+local theme = require("theme_cat")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -49,7 +61,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+beautiful.init("~/.config/awesome/theme_cat.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "ghostty"
@@ -86,6 +98,7 @@ awful.layout.layouts = {
 -- }}}
 
 -- {{{ Menu
+
 -- Create a launcher widget and a main menu
 myawesomemenu = {
    { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
@@ -180,6 +193,56 @@ local function set_wallpaper(s)
     end
 end
 
+---- widgets
+
+-- Distro widget
+container_arch_widget = {
+	{
+		{
+			text = "",
+			font = "JetBrainsMono Nerd Font 15",
+			widget = wibox.widget.textbox,
+		},
+		left = 8,
+		right = 0,
+		top = 2,
+		bottom = 3,
+		widget = wibox.container.margin,
+	},
+	fg = "#f38ba8",
+	widget = wibox.container.background,
+}
+
+mytextclock = wibox.widget.textclock()
+-- Clock widget
+container_clock_widget = {
+	{
+		{
+			{
+				widget = mytextclock,
+			},
+			left = 6,
+			right = 6,
+			top = 0,
+			bottom = 0,
+			widget = wibox.container.margin,
+		},
+		shape = gears.shape.rounded_bar,
+		fg = "#cba6f7",
+		bg = widget_bg,
+		widget = wibox.container.background,
+	},
+	spacing = 5,
+	layout = wibox.layout.fixed.horizontal,
+}
+
+local archimage = wibox.widget({
+	image = theme.layout_archlogo,
+	resize = false,
+	widget = wibox.widget.imagebox,
+})
+
+
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
 
@@ -202,42 +265,113 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist {
-        screen  = s,
-        filter  = awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
-    }
-    
+    -- s.mytaglist = awful.widget.taglist {
+    --     screen  = s,
+    --     filter  = awful.widget.taglist.filter.all,
+    --     buttons = taglist_buttons
+    -- }
+    s.mytaglist = require("my_taglist")(s)
     -- Create a tasklist widget
     -- s.mytasklist = awful.widget.tasklist {
     --     screen  = s,
     --     filter  = awful.widget.tasklist.filter.currenttags,
     --     buttons = tasklist_buttons
     -- }
+    s.mytasklist = awful.widget.tasklist({
+		screen = s,
+		filter = awful.widget.tasklist.filter.currenttags,
+		style = {
+			shape = gears.shape.rounded_bar,
+		},
+		layout = {
+			spacing = 10,
+			layout = wibox.layout.fixed.horizontal,
+		},
+		-- Notice that there is *NO* wibox.wibox prefix, it is a template,
+		-- not a widget instance.
+		widget_template = {
+			{
+				{
+					{
+						{
 
+							{
+								id = "icon_role",
+								widget = wibox.widget.imagebox,
+							},
+							left = 0,
+							right = 5,
+							top = 2,
+							bottom = 2,
+							widget = wibox.container.margin,
+						},
+						{
+							id = "text_role",
+							font = "JetBrainsMono Nerd Font 9",
+							widget = wibox.widget.textbox,
+						},
+						layout = wibox.layout.fixed.horizontal,
+					},
+					left = 5,
+					right = 5,
+					top = 0,
+					bottom = 2,
+					widget = wibox.container.margin,
+				},
+				fg = widget_fg,
+				bg = widget_bg,
+				shape = gears.shape.rounded_bar,
+				widget = wibox.container.background,
+			},
+			left = 0,
+			right = 0,
+			top = 0,
+			bottom = 0,
+			widget = wibox.container.margin,
+		},
+	})
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s,  
-    override_redirect = true,  -- Add this line to allow Polybar to be shown
-    visible = false })
+    s.mywibox = awful.wibar({
+		position = "top",
+		border_width = 0,
+		border_color = "#00000000",
+		height = 30,
+		input_passthrough = true,
+		screen = s,
+	})
 
-    -- -- Add widgets to the wibox
-    -- s.mywibox:setup {
-    --     layout = wibox.layout.align.horizontal,
-    --     { -- Left widgets
-    --         layout = wibox.layout.fixed.horizontal,
-    --         mylauncher,
-    --         s.mytaglist,
-    --         s.mypromptbox,
-    --     },
-    --     s.mytasklist, -- Middle widget
-    --     { -- Right widgets
-    --         layout = wibox.layout.fixed.horizontal,
-    --         mykeyboardlayout,
-    --         wibox.widget.systray(),
-    --         mytextclock,
-    --         s.mylayoutbox,
-    --     },
-    -- }
+	-- Add widgets to the wibox
+	s.mywibox:setup({
+		{
+			layout = wibox.layout.align.horizontal,
+			{ -- Left widgets
+				container_arch_widget,
+				layout = wibox.layout.fixed.horizontal,
+				--mylauncher,
+				s.mytaglist,
+				s.mypromptbox,
+			},
+			{ -- Middle widgets
+				layout = wibox.layout.fixed.horizontal,
+				s.mytasklist,
+			},
+			{ -- Right widgets
+				layout = wibox.layout.fixed.horizontal,
+				--container_temp_widget,
+				--container_storage_widget,
+				--container_cpu_widget,
+				--container_mem_widget,
+				--container_brightness_widget,
+				--container_vol_widget,
+				--container_battery_widget,
+				container_clock_widget,
+				layoutbox,
+			},
+		},
+		top = 0, -- don't forget to increase wibar height
+		color = "#80aa80",
+		widget = wibox.container.margin,
+	})
 end)
 -- }}}
 
@@ -600,7 +734,7 @@ awful.spawn.with_shell("sh ~/.fehbg")
 
 
 --polybar 
-awful.spawn.with_shell("~/.config/polybar/launch.sh --shapes") -- Replace 'example' with your bar name
+--awful.spawn.with_shell("~/.config/polybar/launch.sh --shapes") -- Replace 'example' with your bar name
 
 
 beautiful.useless_gap = 5
