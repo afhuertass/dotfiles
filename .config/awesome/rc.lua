@@ -216,11 +216,11 @@ end
 container_arch_widget = {
 	{
 		{
-			text = "",
+			text = "  ",
 			font = "JetBrainsMono Nerd Font 15",
 			widget = wibox.widget.textbox,
 		},
-		left = 8,
+		left = 20,
 		right = 0,
 		top = 2,
 		bottom = 3,
@@ -368,8 +368,9 @@ awful.screen.connect_for_each_screen(function(s)
 				s.mypromptbox,
 			},
 			{ -- Middle widgets
+                
 				layout = wibox.layout.align.horizontal,
-                container_clock_widget,
+                --container_clock_widget,
 				--s.mytasklist
 			},
 			{ -- Right widgets
@@ -486,8 +487,8 @@ globalkeys = gears.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-              {description = "run prompt", group = "launcher"}),
+    -- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
+    --           {description = "run prompt", group = "launcher"}),
 
     awful.key({ modkey }, "x",
               function ()
@@ -500,10 +501,10 @@ globalkeys = gears.table.join(
               end,
               {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"}),
+    -- awful.key({ modkey }, "p", function() menubar.show() end,
+    --           {description = "show the menubar", group = "launcher"}),
     -- Rofi launcher
-	awful.key({ modkey }, "space", function()
+	awful.key({ modkey }, "r", function()
 		awful.spawn("rofi -show drun")
 	end, { description = "show rofi", group = "launcher" })
 )
