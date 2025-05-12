@@ -139,7 +139,24 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
+local calendar_widget = require("awesome-wm-widgets-master.calendar-widget.calendar")
+
+local cw = calendar_widget({
+    theme = 'nord',
+    placement = 'top_right',
+    start_sunday = true,
+    radius = 10,
+    auto_hide = true,
+-- with customized next/previous (see table above)
+    previous_month_button = 1,
+    next_month_button = 3,
+})
+
 mytextclock = wibox.widget.textclock()
+mytextclock:connect_signal("button::press",
+    function(_, _, _, button)
+        if button == 1 then cw.toggle() end
+    end)
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -213,7 +230,6 @@ container_arch_widget = {
 	widget = wibox.container.background,
 }
 
-mytextclock = wibox.widget.textclock()
 -- Clock widget
 container_clock_widget = {
 	{
@@ -352,8 +368,9 @@ awful.screen.connect_for_each_screen(function(s)
 				s.mypromptbox,
 			},
 			{ -- Middle widgets
-				layout = wibox.layout.fixed.horizontal,
-				s.mytasklist,
+				layout = wibox.layout.align.horizontal,
+                container_clock_widget,
+				--s.mytasklist
 			},
 			{ -- Right widgets
 				layout = wibox.layout.fixed.horizontal,
