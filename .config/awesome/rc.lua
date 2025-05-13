@@ -141,6 +141,16 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 -- Create a textclock widget
 local calendar_widget = require("awesome-wm-widgets-master.calendar-widget.calendar")
 
+-- Create a logout menu widget
+local logout_menu_widget = require("awesome-wm-widgets-master.logout-menu-widget.logout-menu")
+
+
+local logo_andres = logout_menu_widget(
+    {
+        font = 'Play 14',
+        onlock = function() awful.spawn.with_shell('i3lock-fancy') end
+    }
+)
 local cw = calendar_widget({
     theme = 'nord',
     placement = 'top_right',
@@ -354,6 +364,7 @@ awful.screen.connect_for_each_screen(function(s)
 		height = 30,
 		input_passthrough = true,
 		screen = s,
+        expand = "none",
 	})
 
 	-- Add widgets to the wibox
@@ -370,7 +381,6 @@ awful.screen.connect_for_each_screen(function(s)
 			{ -- Middle widgets
                 
 				layout = wibox.layout.align.horizontal,
-                --container_clock_widget,
 				--s.mytasklist
 			},
 			{ -- Right widgets
