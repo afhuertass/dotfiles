@@ -144,13 +144,8 @@ local calendar_widget = require("awesome-wm-widgets-master.calendar-widget.calen
 -- Create a logout menu widget
 local logout_menu_widget = require("awesome-wm-widgets-master.logout-menu-widget.logout-menu")
 
+local logout_popup = require("awesome-wm-widgets-master.logout-popup-widget.logout-popup")
 
-local logo_andres = logout_menu_widget(
-    {
-        font = 'Play 14',
-        onlock = function() awful.spawn.with_shell('i3lock-fancy') end
-    }
-)
 local cw = calendar_widget({
     theme = 'nord',
     placement = 'top_right',
@@ -517,7 +512,14 @@ globalkeys = gears.table.join(
     -- Rofi launcher
 	awful.key({ modkey }, "r", function()
 		awful.spawn("rofi -show drun")
-	end, { description = "show rofi", group = "launcher" })
+	end, { description = "show rofi", group = "launcher" }),
+    awful.key({ modkey, "Control" }, "l", function() logout_popup.launch{
+        bg_color = "#1C1C2B", accent_color = "#F493A1", 
+        text_color = '#CBA6F7', icon_size = 40, icon_margin = 16,
+        phrases = { "Logout" }
+    } end, {
+        description = "Show logout screen", group = "custom"
+    })
 )
 
 clientkeys = gears.table.join(
