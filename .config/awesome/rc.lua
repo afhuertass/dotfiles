@@ -78,6 +78,7 @@ modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
+    awful.layout.suit.spiral,
     awful.layout.suit.tile,
     awful.layout.suit.floating,
     awful.layout.suit.tile.left,
@@ -510,6 +511,7 @@ globalkeys = gears.table.join(
     -- awful.key({ modkey }, "p", function() menubar.show() end,
     --           {description = "show the menubar", group = "launcher"}),
     -- Rofi launcher
+    awful.key({ }, "Print", function () awful.util.spawn_with_shell("import $HOME/screenshots/snap-$(date +%F_%H-%M-%S).png") end),
 	awful.key({ modkey }, "r", function()
 		awful.spawn("rofi -show drun")
 	end, { description = "show rofi", group = "launcher" }),
@@ -767,8 +769,6 @@ awful.spawn.once("picom")
 awful.spawn.with_shell("sh ~/.fehbg")
 
 
---polybar 
---awful.spawn.with_shell("~/.config/polybar/launch.sh --shapes") -- Replace 'example' with your bar name
-
+awful.spawn.with_shell("caffeine")
 
 beautiful.useless_gap = 5
