@@ -771,4 +771,5 @@ awful.spawn.with_shell("sh ~/.fehbg")
 
 awful.spawn.with_shell("caffeine")
 
+awful.spawn.with_shell("sh ~/.config/up.sh ")
 beautiful.useless_gap = 5
